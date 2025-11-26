@@ -16,8 +16,12 @@
       "dest": "/public/index.html"
     },
     {
-      "src": "/check",
+      "src": "/api/check",
       "dest": "/api/check.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
     }
   ]
 }
