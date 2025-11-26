@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host Checker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #2d3748;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .input-section {
+            padding: 30px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .url-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .url-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .check-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .check-btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .check-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+        
+        .result-section {
+            padding: 0;
+        }
+        
+        .result-header {
+            background: #f7fafc;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: bold;
+            color: #4a5568;
+        }
+        
+        .result-content {
+            padding: 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            background: #1a202c;
+            color: #cbd5e0;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            min-height: 200px;
+        }
+        
+        .loading {
+            color: #a0aec0;
+            font-style: italic;
+        }
+        
+        .error {
+            color: #fc8181;
+        }
+        
+        .status-success {
+            color: #68d391;
+        }
+        
+        .status-error {
+            color: #fc8181;
+        }
+        
+        .status-redirect {
+            color: #f6e05e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Host Checker</h1>
+            <p>Test website connectivity and view response headers</p>
+        </div>
+        
+        <div class="input-section">
+            <strong>URL (eg: www.facebook.com)</strong><br><br>
+            <input type="text" class="url-input" id="urlInput" placeholder="Enter website URL" value="pirozas.vercel.app">
+            <br>
+            <button class="check-btn" onclick="checkHost()" id="checkBtn">Check</button>
+        </div>
+        
+        <div class="result-section" id="resultSection" style="display: none;">
+            <div class="result-header">Check Results</div>
+            <div class="result-content" id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        async function checkHost() {
+            const urlInput = document.getElementById('urlInput');
+            const checkBtn = document.getElementById('checkBtn');
+            const resultSection = document.getElementById('resultSection');
+            const resultContent = document.getElementById('resultContent');
+            
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+            
+            // Disable button and show loading
+            checkBtn.disabled = true;
+            checkBtn.textContent = 'Checking...';
+            resultSection.style.display = 'block';
+            resultContent.innerHTML = '<span class="loading">Sending request...</span>';
+            
+            try {
+                const response = await fetch('/check', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    resultContent.innerHTML = `<span class="error">Error: ${data.error}</span>`;
+                } else {
+                    // Format the result similar to your screenshot
+                    let result = `GET - URL: ${data.url}\n`;
+                    result += `${data.url} - Direct\n`;
+                    
+                    // Color code status
+                    const statusClass = data.status >= 400 ? 'status-error' : 
+                                      data.status >= 300 ? 'status-redirect' : 'status-success';
+                    result += `<span class="${statusClass}">HTTP/1.1 ${data.status} ${data.statusText || ''}</span>\n`;
+                    
+                    // Headers
+                    for (const [key, value] of Object.entries(data.headers)) {
+                        result += `${key}: ${value}\n`;
+                    }
+                    
+                    // Response body if available
+                    if (data.body) {
+                        result += `\n--- Response Body ---\n${data.body}`;
+                    }
+                    
+                    resultContent.innerHTML = result;
+                }
+                
+            } catch (error) {
+                resultContent.innerHTML = `<span class="error">Network Error: ${error.message}</span>`;
+            } finally {
+                // Re-enable button
+                checkBtn.disabled = false;
+                checkBtn.textContent = 'Check';
+            }
+        }
+        
+        // Allow Enter key to trigger check
+        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkHost();
+            }
+        });
+    </script>
+</body>
+</html>
