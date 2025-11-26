@@ -3,88 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Educational Proxy Tester</title>
+    <title>VLESS Proxy Tester - Educational</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
             padding: 20px;
+            color: white;
         }
-        .container { max-width: 1000px; margin: 0 auto; }
-        .card { background: white; border-radius: 12px; padding: 30px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .warning { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        input, button { padding: 12px; margin: 5px; border-radius: 6px; }
-        input { width: 300px; border: 2px solid #e2e8f0; }
-        button { background: #667eea; color: white; border: none; cursor: pointer; }
-        button:hover { background: #5a6fd8; }
-        .result { background: #1a202c; color: #cbd5e0; padding: 20px; border-radius: 8px; margin-top: 20px; font-family: monospace; white-space: pre-wrap; }
-        .tabs { display: flex; margin-bottom: 20px; }
-        .tab { padding: 10px 20px; background: #e2e8f0; cursor: pointer; margin-right: 5px; border-radius: 6px 6px 0 0; }
-        .tab.active { background: white; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { 
+            background: rgba(255,255,255,0.1); 
+            backdrop-filter: blur(10px);
+            border-radius: 12px; 
+            padding: 30px; 
+            margin-bottom: 20px; 
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .warning { 
+            background: rgba(255,193,7,0.2); 
+            border: 1px solid #ffc107; 
+            color: #ffd54f; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+        }
+        input, button, select { 
+            padding: 12px; 
+            margin: 5px; 
+            border-radius: 6px; 
+            border: none;
+        }
+        input, select { 
+            width: 300px; 
+            background: rgba(255,255,255,0.9);
+        }
+        button { 
+            background: #4CAF50; 
+            color: white; 
+            cursor: pointer; 
+            transition: background 0.3s;
+        }
+        button:hover { background: #45a049; }
+        button.secondary { background: #2196F3; }
+        button.secondary:hover { background: #1976D2; }
+        .result { 
+            background: rgba(0,0,0,0.7); 
+            color: #00ff00; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-top: 20px; 
+            font-family: 'Courier New', monospace; 
+            white-space: pre-wrap;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .tabs { display: flex; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab { 
+            padding: 12px 24px; 
+            background: rgba(255,255,255,0.1); 
+            cursor: pointer; 
+            margin-right: 5px; 
+            border-radius: 6px; 
+            transition: background 0.3s;
+        }
+        .tab:hover { background: rgba(255,255,255,0.2); }
+        .tab.active { background: #4CAF50; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        .config-box { 
+            background: rgba(0,0,0,0.3); 
+            padding: 15px; 
+            border-radius: 6px; 
+            margin: 10px 0; 
+            font-family: monospace;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .info { color: #2196F3; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="warning">
-            <strong>⚠ EDUCATIONAL USE ONLY</strong><br>
-            This tool is for learning about HTTP protocols, proxy servers, and web infrastructure.
-            Do not use for bypassing restrictions or illegal activities.
+            <strong>⚠ EDUCATIONAL USE ONLY - PROTOCOL LEARNING</strong><br>
+            This tool is for learning about VLESS protocol, WebSocket proxies, and network protocols.
+            Not for production use or bypassing restrictions.
         </div>
 
         <div class="card">
-            <h1>🧪 Educational Proxy Tester</h1>
-            <p>Learn about HTTP protocols, proxy servers, and web infrastructure</p>
+            <h1>🔧 VLESS Protocol Educational Tester</h1>
+            <p>Learn about VLESS proxy protocol, WebSocket transport, and UUID authentication</p>
             
             <div class="tabs">
-                <div class="tab active" onclick="showTab('proxy')">Proxy Test</div>
-                <div class="tab" onclick="showTab('checker')">Host Checker</div>
-                <div class="tab" onclick="showTab('status')">System Status</div>
+                <div class="tab active" onclick="showTab('vless')">VLESS Generator</div>
+                <div class="tab" onclick="showTab('websocket')">WebSocket Test</div>
+                <div class="tab" onclick="showTab('config')">Configuration</div>
+                <div class="tab" onclick="showTab('tools')">Tools</div>
             </div>
 
-            <!-- Proxy Test Tab -->
-            <div id="proxy" class="tab-content active">
-                <h3>HTTP Proxy Testing</h3>
-                <p>Test how proxy servers work by making requests through our educational proxy:</p>
-                <input type="text" id="proxyUrl" placeholder="https://example.com" value="https://httpbin.org/json">
-                <button onclick="testProxy()">Test Proxy</button>
-                <div id="proxyResult" class="result"></div>
+            <!-- VLESS Generator Tab -->
+            <div id="vless" class="tab-content active">
+                <h3>🔑 Generate VLESS Configuration</h3>
+                <p>Create educational VLESS configurations for protocol testing:</p>
+                
+                <div style="margin: 20px 0;">
+                    <button onclick="generateUUID()">Generate New UUID</button>
+                    <button class="secondary" onclick="buildVLESSURL()">Build VLESS URL</button>
+                    <button class="secondary" onclick="testVLESSEndpoint()">Test Endpoint</button>
+                </div>
+                
+                <div>
+                    <input type="text" id="customUUID" placeholder="Or enter custom UUID" style="width: 400px;">
+                    <input type="text" id="customDomain" placeholder="your-domain.vercel.app" style="width: 300px;">
+                </div>
+                
+                <div id="vlessResult" class="result"></div>
             </div>
 
-            <!-- Host Checker Tab -->
-            <div id="checker" class="tab-content">
-                <h3>Host Connectivity Checker</h3>
-                <p>Check if a website is accessible and view response details:</p>
-                <input type="text" id="checkUrl" placeholder="example.com" value="httpbin.org">
-                <button onclick="checkHost()">Check Host</button>
-                <div id="checkResult" class="result"></div>
+            <!-- WebSocket Test Tab -->
+            <div id="websocket" class="tab-content">
+                <h3>🌐 WebSocket Connection Test</h3>
+                <p>Test WebSocket connections to understand VLESS transport layer:</p>
+                
+                <div style="margin: 20px 0;">
+                    <button onclick="startWebSocketTest()">Start WebSocket Test</button>
+                    <button class="secondary" onclick="sendWebSocketMessage()">Send Test Message</button>
+                    <button class="secondary" onclick="closeWebSocket()">Close Connection</button>
+                </div>
+                
+                <div>
+                    <input type="text" id="wsMessage" placeholder="Test message to send" value='{"test": "educational"}' style="width: 400px;">
+                </div>
+                
+                <div id="websocketResult" class="result">WebSocket status: Not connected</div>
             </div>
 
-            <!-- Status Tab -->
-            <div id="status" class="tab-content">
-                <h3>System Status</h3>
-                <p>Check the status of our educational testing platform:</p>
-                <button onclick="getStatus()">Get Status</button>
-                <div id="statusResult" class="result"></div>
+            <!-- Configuration Tab -->
+            <div id="config" class="tab-content">
+                <h3>⚙️ VLESS Configuration Builder</h3>
+                <p>Build complete VLESS configurations for educational purposes:</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                    <div>
+                        <label>UUID:</label><br>
+                        <input type="text" id="configUUID" placeholder="Generate or enter UUID" style="width: 100%;">
+                    </div>
+                    <div>
+                        <label>Domain:</label><br>
+                        <input type="text" id="configDomain" placeholder="your-domain.vercel.app" style="width: 100%;">
+                    </div>
+                    <div>
+                        <label>Path:</label><br>
+                        <input type="text" id="configPath" value="/api/v2ray" style="width: 100%;">
+                    </div>
+                    <div>
+                        <label>Security:</label><br>
+                        <select id="configSecurity" style="width: 100%;">
+                            <option value="tls">TLS</option>
+                            <option value="none">None</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button onclick="generateFullConfig()">Generate Complete Configuration</button>
+                
+                <div id="configResult" class="result"></div>
+            </div>
+
+            <!-- Tools Tab -->
+            <div id="tools" class="tab-content">
+                <h3>🛠️ Protocol Testing Tools</h3>
+                <p>Additional tools for learning about proxy protocols:</p>
+                
+                <div style="margin: 20px 0;">
+                    <button onclick="getSystemStatus()">Check System Status</button>
+                    <button class="secondary" onclick="testProxy()">Test HTTP Proxy</button>
+                    <button class="secondary" onclick="checkHost()">Check Host Connectivity</button>
+                </div>
+                
+                <div id="toolsResult" class="result"></div>
             </div>
         </div>
 
         <div class="card">
             <h3>📚 Learning Objectives</h3>
-            <ul>
-                <li>Understand HTTP request/response cycle</li>
-                <li>Learn about proxy server mechanics</li>
-                <li>Study HTTP headers and status codes</li>
-                <li>Explore network troubleshooting</li>
-                <li>Learn about CORS and web security</li>
-            </ul>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <h4>VLESS Protocol</h4>
+                    <ul>
+                        <li>UUID-based authentication</li>
+                        <li>WebSocket transport layer</li>
+                        <li>TLS encryption</li>
+                        <li>Protocol handshakes</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Web Technology</h4>
+                    <ul>
+                        <li>WebSocket protocol</li>
+                        <li>HTTP/HTTPS differences</li>
+                        <li>Proxy mechanics</li>
+                        <li>Network security</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
+        let websocket = null;
+        const currentDomain = window.location.hostname;
+        
+        // Set current domain in inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('customDomain').value = currentDomain;
+            document.getElementById('configDomain').value = currentDomain;
+        });
+
         function showTab(tabName) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -92,48 +231,197 @@
             document.getElementById(tabName).classList.add('active');
         }
 
-        async function testProxy() {
-            const url = document.getElementById('proxyUrl').value;
-            const result = document.getElementById('proxyResult');
-            result.innerHTML = 'Testing... ⏳';
+        // VLESS Functions
+        async function generateUUID() {
+            const result = document.getElementById('vlessResult');
+            result.innerHTML = '🔄 Generating UUID...';
             
             try {
-                const response = await fetch(`/api/proxy?url=${encodeURIComponent(url)}`);
+                const response = await fetch('/api/uuid');
                 const data = await response.json();
+                
+                // Fill UUID fields
+                document.getElementById('customUUID').value = data.uuid;
+                document.getElementById('configUUID').value = data.uuid;
+                
                 result.innerHTML = JSON.stringify(data, null, 2);
             } catch (error) {
-                result.innerHTML = `Error: ${error.message}`;
+                result.innerHTML = `❌ Error: ${error.message}`;
             }
         }
 
-        async function checkHost() {
-            const url = document.getElementById('checkUrl').value;
-            const result = document.getElementById('checkResult');
-            result.innerHTML = 'Checking... ⏳';
+        function buildVLESSURL() {
+            const uuid = document.getElementById('customUUID').value || 'YOUR-UUID-HERE';
+            const domain = document.getElementById('customDomain').value || currentDomain;
+            
+            const vlessURL = `vless://${uuid}@${domain}:443?path=%2Fapi%2Fv2ray&security=tls&encryption=none&type=ws#Educational-Test`;
+            
+            const result = {
+                educational: "VLESS URL Builder - For Protocol Learning",
+                vless_url: vlessURL,
+                encoded_url: encodeURIComponent(vlessURL),
+                components: {
+                    uuid: uuid,
+                    domain: domain,
+                    port: "443",
+                    path: "/api/v2ray",
+                    security: "tls",
+                    encryption: "none",
+                    type: "ws"
+                },
+                usage: "Copy this URL to VLESS client for educational testing"
+            };
+            
+            document.getElementById('vlessResult').innerHTML = JSON.stringify(result, null, 2);
+        }
+
+        async function testVLESSEndpoint() {
+            const result = document.getElementById('vlessResult');
+            result.innerHTML = '🔄 Testing VLESS endpoint...';
             
             try {
-                const response = await fetch('/api/check', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url })
-                });
+                const response = await fetch('/api/v2ray');
                 const data = await response.json();
                 result.innerHTML = JSON.stringify(data, null, 2);
             } catch (error) {
-                result.innerHTML = `Error: ${error.message}`;
+                result.innerHTML = `❌ Error: ${error.message}`;
             }
         }
 
-        async function getStatus() {
-            const result = document.getElementById('statusResult');
-            result.innerHTML = 'Loading... ⏳';
+        // WebSocket Functions
+        function startWebSocketTest() {
+            const result = document.getElementById('websocketResult');
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${currentDomain}/api/v2ray`;
+            
+            try {
+                websocket = new WebSocket(wsUrl);
+                
+                websocket.onopen = function(event) {
+                    result.innerHTML = '✅ WebSocket connected!\n';
+                    result.innerHTML += 'Ready to send test messages...\n\n';
+                };
+                
+                websocket.onmessage = function(event) {
+                    result.innerHTML += `📨 Received: ${event.data}\n`;
+                    result.scrollTop = result.scrollHeight;
+                };
+                
+                websocket.onclose = function(event) {
+                    result.innerHTML += `🔌 WebSocket closed: ${event.code} - ${event.reason || 'No reason'}\n`;
+                };
+                
+                websocket.onerror = function(error) {
+                    result.innerHTML += `❌ WebSocket error: ${error}\n`;
+                };
+                
+            } catch (error) {
+                result.innerHTML = `❌ Failed to create WebSocket: ${error.message}`;
+            }
+        }
+
+        function sendWebSocketMessage() {
+            const result = document.getElementById('websocketResult');
+            const message = document.getElementById('wsMessage').value;
+            
+            if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+                result.innerHTML += '❌ WebSocket not connected\n';
+                return;
+            }
+            
+            try {
+                websocket.send(message);
+                result.innerHTML += `📤 Sent: ${message}\n`;
+                result.scrollTop = result.scrollHeight;
+            } catch (error) {
+                result.innerHTML += `❌ Failed to send: ${error.message}\n`;
+            }
+        }
+
+        function closeWebSocket() {
+            if (websocket) {
+                websocket.close();
+                websocket = null;
+            }
+        }
+
+        // Configuration Functions
+        function generateFullConfig() {
+            const uuid = document.getElementById('configUUID').value || 'GENERATE-UUID-FIRST';
+            const domain = document.getElementById('configDomain').value || currentDomain;
+            const path = document.getElementById('configPath').value;
+            const security = document.getElementById('configSecurity').value;
+            
+            const config = {
+                educational: "Complete VLESS Configuration for Learning",
+                vless_url: `vless://${uuid}@${domain}:443?path=${encodeURIComponent(path)}&security=${security}&encryption=none&type=ws#Educational-Config`,
+                client_config: {
+                    protocol: "vless",
+                    uuid: uuid,
+                    address: domain,
+                    port: 443,
+                    path: path,
+                    security: security,
+                    encryption: "none",
+                    transport: "ws"
+                },
+                server_config: {
+                    endpoint: `/api/v2ray`,
+                    protocol: "WebSocket",
+                    educational_note: "This configuration is for learning about proxy protocols"
+                },
+                testing_instructions: [
+                    "1. Generate a UUID first if not done",
+                    "2. Use the VLESS URL in a compatible client",
+                    "3. Monitor connections in WebSocket tab",
+                    "4. Analyze protocol behavior for learning"
+                ]
+            };
+            
+            document.getElementById('configResult').innerHTML = JSON.stringify(config, null, 2);
+        }
+
+        // Tools Functions
+        async function getSystemStatus() {
+            const result = document.getElementById('toolsResult');
+            result.innerHTML = '🔄 Checking system status...';
             
             try {
                 const response = await fetch('/api/status');
                 const data = await response.json();
                 result.innerHTML = JSON.stringify(data, null, 2);
             } catch (error) {
-                result.innerHTML = `Error: ${error.message}`;
+                result.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        async function testProxy() {
+            const result = document.getElementById('toolsResult');
+            result.innerHTML = '🔄 Testing proxy endpoint...';
+            
+            try {
+                const response = await fetch('/api/proxy?url=https://httpbin.org/json');
+                const data = await response.json();
+                result.innerHTML = JSON.stringify(data, null, 2);
+            } catch (error) {
+                result.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        async function checkHost() {
+            const result = document.getElementById('toolsResult');
+            result.innerHTML = '🔄 Checking host connectivity...';
+            
+            try {
+                const response = await fetch('/api/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: 'httpbin.org' })
+                });
+                const data = await response.json();
+                result.innerHTML = JSON.stringify(data, null, 2);
+            } catch (error) {
+                result.innerHTML = `❌ Error: ${error.message}`;
             }
         }
     </script>
