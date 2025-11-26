@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/check.js",
+      "src": "api/*.js",
       "use": "@vercel/node"
     },
     {
@@ -16,8 +16,16 @@
       "dest": "/public/index.html"
     },
     {
+      "src": "/api/proxy",
+      "dest": "/api/proxy.js"
+    },
+    {
       "src": "/api/check",
-      "dest": "/api/check.js"
+      "dest": "/api/checker.js"
+    },
+    {
+      "src": "/api/status",
+      "dest": "/api/status.js"
     },
     {
       "src": "/(.*)",
