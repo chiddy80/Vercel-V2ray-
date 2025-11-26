@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Educational Proxy Tester</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .card { background: white; border-radius: 12px; padding: 30px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        input, button { padding: 12px; margin: 5px; border-radius: 6px; }
+        input { width: 300px; border: 2px solid #e2e8f0; }
+        button { background: #667eea; color: white; border: none; cursor: pointer; }
+        button:hover { background: #5a6fd8; }
+        .result { background: #1a202c; color: #cbd5e0; padding: 20px; border-radius: 8px; margin-top: 20px; font-family: monospace; white-space: pre-wrap; }
+        .tabs { display: flex; margin-bottom: 20px; }
+        .tab { padding: 10px 20px; background: #e2e8f0; cursor: pointer; margin-right: 5px; border-radius: 6px 6px 0 0; }
+        .tab.active { background: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="warning">
+            <strong>⚠ EDUCATIONAL USE ONLY</strong><br>
+            This tool is for learning about HTTP protocols, proxy servers, and web infrastructure.
+            Do not use for bypassing restrictions or illegal activities.
+        </div>
+
+        <div class="card">
+            <h1>🧪 Educational Proxy Tester</h1>
+            <p>Learn about HTTP protocols, proxy servers, and web infrastructure</p>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('proxy')">Proxy Test</div>
+                <div class="tab" onclick="showTab('checker')">Host Checker</div>
+                <div class="tab" onclick="showTab('status')">System Status</div>
+            </div>
+
+            <!-- Proxy Test Tab -->
+            <div id="proxy" class="tab-content active">
+                <h3>HTTP Proxy Testing</h3>
+                <p>Test how proxy servers work by making requests through our educational proxy:</p>
+                <input type="text" id="proxyUrl" placeholder="https://example.com" value="https://httpbin.org/json">
+                <button onclick="testProxy()">Test Proxy</button>
+                <div id="proxyResult" class="result"></div>
+            </div>
+
+            <!-- Host Checker Tab -->
+            <div id="checker" class="tab-content">
+                <h3>Host Connectivity Checker</h3>
+                <p>Check if a website is accessible and view response details:</p>
+                <input type="text" id="checkUrl" placeholder="example.com" value="httpbin.org">
+                <button onclick="checkHost()">Check Host</button>
+                <div id="checkResult" class="result"></div>
+            </div>
+
+            <!-- Status Tab -->
+            <div id="status" class="tab-content">
+                <h3>System Status</h3>
+                <p>Check the status of our educational testing platform:</p>
+                <button onclick="getStatus()">Get Status</button>
+                <div id="statusResult" class="result"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📚 Learning Objectives</h3>
+            <ul>
+                <li>Understand HTTP request/response cycle</li>
+                <li>Learn about proxy server mechanics</li>
+                <li>Study HTTP headers and status codes</li>
+                <li>Explore network troubleshooting</li>
+                <li>Learn about CORS and web security</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        async function testProxy() {
+            const url = document.getElementById('proxyUrl').value;
+            const result = document.getElementById('proxyResult');
+            result.innerHTML = 'Testing... ⏳';
+            
+            try {
+                const response = await fetch(`/api/proxy?url=${encodeURIComponent(url)}`);
+                const data = await response.json();
+                result.innerHTML = JSON.stringify(data, null, 2);
+            } catch (error) {
+                result.innerHTML = `Error: ${error.message}`;
+            }
+        }
+
+        async function checkHost() {
+            const url = document.getElementById('checkUrl').value;
+            const result = document.getElementById('checkResult');
+            result.innerHTML = 'Checking... ⏳';
+            
+            try {
+                const response = await fetch('/api/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+                const data = await response.json();
+                result.innerHTML = JSON.stringify(data, null, 2);
+            } catch (error) {
+                result.innerHTML = `Error: ${error.message}`;
+            }
+        }
+
+        async function getStatus() {
+            const result = document.getElementById('statusResult');
+            result.innerHTML = 'Loading... ⏳';
+            
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                result.innerHTML = JSON.stringify(data, null, 2);
+            } catch (error) {
+                result.innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
