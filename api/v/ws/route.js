@@ -8,7 +8,7 @@ export default async function handler(req) {
   const upgrade = req.headers.get("upgrade");
 
   if (upgrade && upgrade.toLowerCase() === "websocket") {
-    return fetch(backend + "/mrchiddyV3", {
+    return fetch(backend + "/coldplay", {
       method: "GET",
       headers: req.headers,
     });
