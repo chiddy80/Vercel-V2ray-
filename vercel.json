@@ -1,8 +1,0 @@
-{
-  "routes": [
-    {
-      "src": "/api/v/ws/(.*)",
-      "dest": "/api/v/ws/route.js"
-    }
-  ]
-}
