@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
       timeout: 10000,
       validateStatus: null, // Don't throw on HTTP errors
       headers: {
-        'User-Agent': 'Host-Checker-Bot/1.0'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
       }
     });
 
@@ -61,6 +61,8 @@ module.exports = async (req, res) => {
       errorMessage = 'Connection refused - host is not accepting connections';
     } else if (error.code === 'ETIMEDOUT') {
       errorMessage = 'Connection timeout - host took too long to respond';
+    } else if (error.response) {
+      errorMessage = `Server responded with status: ${error.response.status}`;
     }
     
     res.status(500).json({ 
@@ -68,4 +70,4 @@ module.exports = async (req, res) => {
       timestamp: new Date().toUTCString()
     });
   }
-};
+}
