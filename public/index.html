@@ -165,43 +165,46 @@
             resultContent.innerHTML = '<span class="loading">Sending request...</span>';
             
             try {
-                const response = await fetch('/check', {
-                    method: 'POST',
+                let fullUrl = url;
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    fullUrl = 'https://' + url;
+                }
+
+                // Using CORS proxy to avoid browser restrictions
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(fullUrl)}`;
+                
+                const response = await fetch(proxyUrl, {
+                    method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ url: url })
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                    }
                 });
+
+                let result = `GET - URL: ${fullUrl}\n`;
+                result += `${fullUrl} - Direct\n`;
                 
-                const data = await response.json();
+                // Color code status
+                const statusClass = response.status >= 400 ? 'status-error' : 
+                                  response.status >= 300 ? 'status-redirect' : 'status-success';
+                result += `<span class="${statusClass}">HTTP/1.1 ${response.status} ${response.statusText}</span>\n`;
                 
-                if (data.error) {
-                    resultContent.innerHTML = `<span class="error">Error: ${data.error}</span>`;
-                } else {
-                    // Format the result similar to your screenshot
-                    let result = `GET - URL: ${data.url}\n`;
-                    result += `${data.url} - Direct\n`;
-                    
-                    // Color code status
-                    const statusClass = data.status >= 400 ? 'status-error' : 
-                                      data.status >= 300 ? 'status-redirect' : 'status-success';
-                    result += `<span class="${statusClass}">HTTP/1.1 ${data.status} ${data.statusText || ''}</span>\n`;
-                    
-                    // Headers
-                    for (const [key, value] of Object.entries(data.headers)) {
-                        result += `${key}: ${value}\n`;
-                    }
-                    
-                    // Response body if available
-                    if (data.body) {
-                        result += `\n--- Response Body ---\n${data.body}`;
-                    }
-                    
-                    resultContent.innerHTML = result;
+                // Headers
+                for (const [key, value] of response.headers.entries()) {
+                    result += `${key}: ${value}\n`;
                 }
                 
+                // Try to get response text
+                try {
+                    const text = await response.text();
+                    result += `\n--- Response Body (first 500 chars) ---\n${text.substring(0, 500)}`;
+                } catch (e) {
+                    result += `\n--- Response Body ---\n[Binary content or unable to read]`;
+                }
+                
+                resultContent.innerHTML = result;
+                
             } catch (error) {
-                resultContent.innerHTML = `<span class="error">Network Error: ${error.message}</span>`;
+                resultContent.innerHTML = `<span class="error">Error: ${error.message}</span>`;
             } finally {
                 // Re-enable button
                 checkBtn.disabled = false;
@@ -217,4 +220,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
